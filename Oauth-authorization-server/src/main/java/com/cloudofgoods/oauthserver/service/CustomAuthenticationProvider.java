@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private CustomClientDetailsService customClientDetailsService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -23,7 +23,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user= customUserDetailsService.loadUserByUsername(username);
+        UserDetails user= customClientDetailsService.loadUserByUsername(username);
         return checkPassword(user,password);
     }
 

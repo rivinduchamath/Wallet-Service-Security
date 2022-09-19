@@ -1,11 +1,11 @@
 package com.cloudofgoods.client.controller;
 
-import com.cloudofgoods.client.entity.User;
+import com.cloudofgoods.client.entity.Client;
 import com.cloudofgoods.client.entity.VerificationToken;
 import com.cloudofgoods.client.event.RegistrationCompleteEvent;
 import com.cloudofgoods.client.model.PasswordModel;
-import com.cloudofgoods.client.model.UserModel;
-import com.cloudofgoods.client.service.UserService;
+import com.cloudofgoods.client.model.ClientModel;
+import com.cloudofgoods.client.service.ClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -20,16 +20,16 @@ import java.util.UUID;
 public class RegistrationController {
 
     @Autowired
-    private UserService userService;
+    private ClientService clientService;
 
     @Autowired
     private ApplicationEventPublisher publisher;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserModel userModel, final HttpServletRequest request) {
-        User user = userService.registerUser(userModel);
+    public String registerUser(@RequestBody ClientModel clientModel, final HttpServletRequest request) {
+        Client client = clientService.registerUser(clientModel);
         publisher.publishEvent(new RegistrationCompleteEvent(
-                user,
+                client,
                 applicationUrl(request)
         ));
         return "Success";
@@ -37,19 +37,19 @@ public class RegistrationController {
 
     @GetMapping("/verifyRegistration")
     public String verifyRegistration(@RequestParam("token") String token) {
-        String result = userService.validateVerificationToken(token);
+        String result = clientService.validateVerificationToken(token);
         if(result.equalsIgnoreCase("valid")) {
-            return "User Verified Successfully";
+            return "Client Verified Successfully";
         }
-        return "Bad User";
+        return "Bad Client";
     }
     @GetMapping("/verifyRegistration1")
     public String verifyRegistration1(@RequestParam("token") String token) {
-        String result = userService.validateVerificationToken(token);
+        String result = clientService.validateVerificationToken(token);
         if(result.equalsIgnoreCase("valid")) {
-            return "User Verified Successfully";
+            return "Client Verified Successfully";
         }
-        return "Bad User";
+        return "Bad Client";
     }
 
 
@@ -57,20 +57,20 @@ public class RegistrationController {
     public String resendVerificationToken(@RequestParam("token") String oldToken,
                                           HttpServletRequest request) {
         VerificationToken verificationToken
-                = userService.generateNewVerificationToken(oldToken);
-        User user = verificationToken.getUser();
-        resendVerificationTokenMail(user, applicationUrl(request), verificationToken);
+                = clientService.generateNewVerificationToken(oldToken);
+        Client client = verificationToken.getClient();
+        resendVerificationTokenMail(client, applicationUrl(request), verificationToken);
         return "Verification Link Sent";
     }
 
     @PostMapping("/resetPassword")
     public String resetPassword(@RequestBody PasswordModel passwordModel, HttpServletRequest request) {
-        User user = userService.findUserByEmail(passwordModel.getEmail());
+        Client client = clientService.findUserByEmail(passwordModel.getEmail());
         String url = "";
-        if(user!=null) {
+        if(client !=null) {
             String token = UUID.randomUUID().toString();
-            userService.createPasswordResetTokenForUser(user,token);
-            url = passwordResetTokenMail(user,applicationUrl(request), token);
+            clientService.createPasswordResetTokenForUser(client,token);
+            url = passwordResetTokenMail(client,applicationUrl(request), token);
         }
         return url;
     }
@@ -78,13 +78,13 @@ public class RegistrationController {
     @PostMapping("/savePassword")
     public String savePassword(@RequestParam("token") String token,
                                @RequestBody PasswordModel passwordModel) {
-        String result = userService.validatePasswordResetToken(token);
+        String result = clientService.validatePasswordResetToken(token);
         if(!result.equalsIgnoreCase("valid")) {
             return "Invalid Token";
         }
-        Optional<User> user = userService.getUserByPasswordResetToken(token);
+        Optional<Client> user = clientService.getUserByPasswordResetToken(token);
         if(user.isPresent()) {
-            userService.changePassword(user.get(), passwordModel.getNewPassword());
+            clientService.changePassword(user.get(), passwordModel.getNewPassword());
             return "Password Reset Successfully";
         } else {
             return "Invalid Token";
@@ -93,16 +93,16 @@ public class RegistrationController {
 
     @PostMapping("/changePassword")
     public String changePassword(@RequestBody PasswordModel passwordModel){
-        User user = userService.findUserByEmail(passwordModel.getEmail());
-        if(!userService.checkIfValidOldPassword(user,passwordModel.getOldPassword())) {
+        Client client = clientService.findUserByEmail(passwordModel.getEmail());
+        if(!clientService.checkIfValidOldPassword(client,passwordModel.getOldPassword())) {
             return "Invalid Old Password";
         }
         //Save New Password
-        userService.changePassword(user,passwordModel.getNewPassword());
+        clientService.changePassword(client,passwordModel.getNewPassword());
         return "Password Changed Successfully";
     }
 
-    private String passwordResetTokenMail(User user, String applicationUrl, String token) {
+    private String passwordResetTokenMail(Client client, String applicationUrl, String token) {
         String url =
                 applicationUrl
                         + "/savePassword?token="
@@ -115,7 +115,7 @@ public class RegistrationController {
     }
 
 
-    private void resendVerificationTokenMail(User user, String applicationUrl, VerificationToken verificationToken) {
+    private void resendVerificationTokenMail(Client client, String applicationUrl, VerificationToken verificationToken) {
         String url =
                 applicationUrl
                         + "/verifyRegistration?token="

@@ -1,10 +1,10 @@
 package com.cloudofgoods.client.repository;
 
-import com.cloudofgoods.client.entity.User;
+import com.cloudofgoods.client.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Long> {
-    User findByEmail(String email);
+public interface ClientRepository extends JpaRepository<Client,Long> {
+    Client findByEmail(String email);
 }

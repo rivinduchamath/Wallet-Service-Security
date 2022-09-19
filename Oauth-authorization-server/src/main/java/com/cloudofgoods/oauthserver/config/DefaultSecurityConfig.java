@@ -1,6 +1,7 @@
 package com.cloudofgoods.oauthserver.config;
 
 import com.cloudofgoods.oauthserver.service.CustomAuthenticationProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
@@ -9,24 +10,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class DefaultSecurityConfig {
 
-    @Autowired
-    private CustomAuthenticationProvider customAuthenticationProvider;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().authenticated()
-                )
-                .formLogin(Customizer.withDefaults());
+        http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated()).formLogin(Customizer.withDefaults());
         return http.build();
     }
 
     @Autowired
     public void bindAuthenticationProvider(AuthenticationManagerBuilder authenticationManagerBuilder) {
-        authenticationManagerBuilder
-                .authenticationProvider(customAuthenticationProvider);
+        authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
     }
 }

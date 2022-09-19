@@ -25,12 +25,12 @@ public class PasswordResetToken {
     @JoinColumn(name = "user_id",
             nullable = false,
             foreignKey = @ForeignKey(name = "FK_USER_PASSWORD_TOKEN"))
-    private User user;
+    private Client client;
 
-    public PasswordResetToken(User user, String token) {
+    public PasswordResetToken(Client client, String token) {
         super();
         this.token = token;
-        this.user = user;
+        this.client = client;
         this.expirationTime = calculateExpirationDate(EXPIRATION_TIME);
     }
 

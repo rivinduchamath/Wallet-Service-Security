@@ -1,11 +1,11 @@
 package com.cloudofgoods.client.service;
 
+import com.cloudofgoods.client.entity.Client;
 import com.cloudofgoods.client.entity.PasswordResetToken;
-import com.cloudofgoods.client.entity.User;
 import com.cloudofgoods.client.entity.VerificationToken;
-import com.cloudofgoods.client.model.UserModel;
+import com.cloudofgoods.client.model.ClientModel;
 import com.cloudofgoods.client.repository.PasswordResetTokenRepository;
-import com.cloudofgoods.client.repository.UserRepository;
+import com.cloudofgoods.client.repository.ClientRepository;
 import com.cloudofgoods.client.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,10 +16,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class ClientServiceImpl implements ClientService {
 
     @Autowired
-    private UserRepository userRepository;
+    private ClientRepository clientRepository;
 
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
@@ -31,22 +31,22 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User registerUser(UserModel userModel) {
-        User user = new User();
-        user.setEmail(userModel.getEmail());
-        user.setFirstName(userModel.getFirstName());
-        user.setLastName(userModel.getLastName());
-        user.setRole("USER");
-        user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+    public Client registerUser(ClientModel clientModel) {
+        Client client = new Client();
+        client.setEmail(clientModel.getEmail());
+        client.setFirstName(clientModel.getFirstName());
+        client.setLastName(clientModel.getLastName());
+        client.setRole("USER");
+        client.setPassword(passwordEncoder.encode(clientModel.getPassword()));
 
-        userRepository.save(user);
-        return user;
+        clientRepository.save(client);
+        return client;
     }
 
     @Override
-    public void saveVerificationTokenForUser(String token, User user) {
+    public void saveVerificationTokenForUser(String token, Client client) {
         VerificationToken verificationToken
-                = new VerificationToken(user, token);
+                = new VerificationToken(client, token);
 
         verificationTokenRepository.save(verificationToken);
     }
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
             return "invalid";
         }
 
-        User user = verificationToken.getUser();
+        Client client = verificationToken.getClient();
         Calendar cal = Calendar.getInstance();
 
         if ((verificationToken.getExpirationTime().getTime()
@@ -69,8 +69,8 @@ public class UserServiceImpl implements UserService {
             return "expired";
         }
 
-        user.setEnabled(true);
-        userRepository.save(user);
+        client.setEnabled(true);
+        clientRepository.save(client);
         return "valid";
     }
 
@@ -84,14 +84,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Client findUserByEmail(String email) {
+        return clientRepository.findByEmail(email);
     }
 
     @Override
-    public void createPasswordResetTokenForUser(User user, String token) {
+    public void createPasswordResetTokenForUser(Client client, String token) {
         PasswordResetToken passwordResetToken
-                = new PasswordResetToken(user,token);
+                = new PasswordResetToken(client,token);
         passwordResetTokenRepository.save(passwordResetToken);
     }
 
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
             return "invalid";
         }
 
-        User user = passwordResetToken.getUser();
+        Client client = passwordResetToken.getClient();
         Calendar cal = Calendar.getInstance();
 
         if ((passwordResetToken.getExpirationTime().getTime()
@@ -117,18 +117,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserByPasswordResetToken(String token) {
-        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getUser());
+    public Optional<Client> getUserByPasswordResetToken(String token) {
+        return Optional.ofNullable(passwordResetTokenRepository.findByToken(token).getClient());
     }
 
     @Override
-    public void changePassword(User user, String newPassword) {
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+    public void changePassword(Client client, String newPassword) {
+        client.setPassword(passwordEncoder.encode(newPassword));
+        clientRepository.save(client);
     }
 
     @Override
-    public boolean checkIfValidOldPassword(User user, String oldPassword) {
-        return passwordEncoder.matches(oldPassword, user.getPassword());
+    public boolean checkIfValidOldPassword(Client client, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, client.getPassword());
     }
 }

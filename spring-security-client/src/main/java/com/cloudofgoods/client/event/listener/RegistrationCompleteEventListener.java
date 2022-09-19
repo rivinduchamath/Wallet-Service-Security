@@ -1,7 +1,7 @@
 package com.cloudofgoods.client.event.listener;
 
-import com.cloudofgoods.client.entity.User;
-import com.cloudofgoods.client.service.UserService;
+import com.cloudofgoods.client.entity.Client;
+import com.cloudofgoods.client.service.ClientService;
 import com.cloudofgoods.client.event.RegistrationCompleteEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,15 @@ public class RegistrationCompleteEventListener implements
         ApplicationListener<RegistrationCompleteEvent> {
 
     @Autowired
-    private UserService userService;
+    private ClientService clientService;
 
     @Override
     public void onApplicationEvent(RegistrationCompleteEvent event) {
-        //Create the Verification Token for the User with Link
-        User user = event.getUser();
+        //Create the Verification Token for the Client with Link
+        Client client = event.getClient();
         String token = UUID.randomUUID().toString();
-        userService.saveVerificationTokenForUser(token,user);
-        //Send Mail to user
+        clientService.saveVerificationTokenForUser(token, client);
+        //Send Mail to client
         String url =
                 event.getApplicationUrl()
                         + "/verifyRegistration?token="

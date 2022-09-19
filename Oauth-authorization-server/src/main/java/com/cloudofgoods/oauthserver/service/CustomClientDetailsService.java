@@ -1,7 +1,7 @@
 package com.cloudofgoods.oauthserver.service;
 
-import com.cloudofgoods.oauthserver.entity.User;
-import com.cloudofgoods.oauthserver.repository.UserRepository;
+import com.cloudofgoods.oauthserver.entity.Client;
+import com.cloudofgoods.oauthserver.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,10 +20,10 @@ import java.util.List;
 
 @Service
 @Transactional
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomClientDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private ClientRepository clientRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,18 +32,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if(user == null) {
-            throw  new UsernameNotFoundException("No User Found");
+        Client client = clientRepository.findByEmail(email);
+        if(client == null) {
+            throw  new UsernameNotFoundException("No Client Found");
         }
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.isEnabled(),
+                client.getEmail(),
+                client.getPassword(),
+                client.isEnabled(),
                 true,
                 true,
                 true,
-                getAuthorities(List.of(user.getRole()))
+                getAuthorities(List.of(client.getRole()))
         );
     }
 

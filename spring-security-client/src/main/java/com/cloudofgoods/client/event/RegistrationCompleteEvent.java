@@ -1,6 +1,6 @@
 package com.cloudofgoods.client.event;
 
-import com.cloudofgoods.client.entity.User;
+import com.cloudofgoods.client.entity.Client;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
@@ -9,12 +9,12 @@ import org.springframework.context.ApplicationEvent;
 @Setter
 public class RegistrationCompleteEvent extends ApplicationEvent {
 
-    private final User user;
+    private final Client client;
     private final String applicationUrl;
 
-    public RegistrationCompleteEvent(User user, String applicationUrl) {
-        super(user);
-        this.user = user;
+    public RegistrationCompleteEvent(Client client, String applicationUrl) {
+        super(client);
+        this.client = client;
         this.applicationUrl = applicationUrl;
     }
 }

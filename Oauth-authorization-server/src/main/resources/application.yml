@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/user_registration?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/client_registration?createDatabaseIfNotExist=true
     username: root
     password: mynewpassword
     driver-class-name: com.mysql.cj.jdbc.Driver
