@@ -1,7 +1,6 @@
 package com.cloudofgoods.client.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +16,11 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 @RequiredArgsConstructor
 public class HelloController {
 
-
     private final WebClient webClient;
 
     @GetMapping("/api/hello")
     public String hello(Principal principal) {
-        return "Hello " +principal.getName()+", Welcome to Daily Code Buffer!!";
+        return "Hello " +principal.getName()+", Welcome ";
     }
 
     @GetMapping("/api/users")
